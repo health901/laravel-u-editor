@@ -1,18 +1,16 @@
-<?php namespace Stevenyangecho\UEditor\Uploader;
+<?php namespace VRobin\UEditor\Uploader;
 
-use Stevenyangecho\UEditor\Uploader\Upload;
 
 /**
  * Class UploadScrawl
  * 涂鸦上传
- * @package Stevenyangecho\UEditor\Uploader
+ * @package VRobin\UEditor\Uploader
  */
 class UploadScrawl extends Upload
 {
-    use UploadQiniu;
 
 
-    public function doUpload()
+    public function prepare()
     {
 
         $base64Data = $this->request->get($this->fileField);

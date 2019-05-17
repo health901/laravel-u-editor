@@ -9,21 +9,13 @@ UEditor 前台文件完全无修改,可自由gulp等工具部署到生产环境
  
 根据系统的config.app.locale自动切换多语言. 暂时只支持 en,zh_CN,zh_TW
 
-支持本地和七牛云存储,默认为本地上传 public/uploads
+使用laravel filesystems进行文件管理
 
 ##ChangeLog
+ v2.0.0 fork from `stevenyangecho/laravel-u-editor` 
+ 
  1.4.0 版  支持 laravel5.3 更新百度 UEditor 1.4.3.3
 
- 1.3.0 版  改变服务器请求路由 为 /laravel-u-editor-server/server 
-           老版本升级,需要 更改 public/ueditor.config.js 
-          
-            , serverUrl: "/laravel-u-editor-server/server"
-
- 1.2.5 版 增加对Laravel5.* 的支持,更新百度 UEditor 1.4.3.1
- 
- 1.2 版 增加对Laravel5.1 的支持,修改一些说明
- 
- 1.1 版 增加七牛云存储的支持
 
 ## 重要提示
 有些同学配置总是不成功,除了一般设置,权限等基础问题,很大的可能是 middleware和 csrf 没配置好.
@@ -40,14 +32,14 @@ UEditor 前台文件完全无修改,可自由gulp等工具部署到生产环境
 To get the latest version of Laravel Exceptions, simply add the following line to the require block of your `composer.json` file:
 
 ```
-"stevenyangecho/laravel-u-editor": "~1.4"
+"vrobin/laravel-u-editor": "~2.0"
 ```
 
 You'll then need to run `composer install` or `composer update` to download it and have the autoloader updated.
 
 Once Laravel Exceptions is installed, you need to register the service provider. Open up `config/app.php` and add the following to the `providers` key.
 
-* `'Stevenyangecho\UEditor\UEditorServiceProvider'`
+* `'VRobin\UEditor\UEditorServiceProvider'`
 
 then run 
 

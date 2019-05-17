@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Stevenyangecho\UEditor\Uploader\UploadScrawl;
 use Stevenyangecho\UEditor\Uploader\UploadFile;
 use Stevenyangecho\UEditor\Uploader\UploadCatch;
+use VRobin\UEditor\Uploader\Lists;
 
 class Controller extends BaseController
 {
@@ -73,29 +74,11 @@ class Controller extends BaseController
 
             /* 列出图片 */
             case 'listimage':
-
-
-                if (config('UEditorUpload.core.mode') == 'local') {
-                    $result = with(new Lists(
-                        $config['imageManagerAllowFiles'],
-                        $config['imageManagerListSize'],
-                        $config['imageManagerListPath'],
-                        $request))->getList();
-                } else if (config('UEditorUpload.core.mode') == 'qiniu') {
-                    $result = with(new ListsQiniu(
-                        $config['imageManagerAllowFiles'],
-                        $config['imageManagerListSize'],
-                        $config['imageManagerListPath'],
-                        $request))->getList();
-                }else {
-                    $result = with(new Lists(
-                        $config['imageManagerAllowFiles'],
-                        $config['imageManagerListSize'],
-                        $config['imageManagerListPath'],
-                        $request))->getList();
-                }
-
-
+                $result = with(new Lists(
+                    $config['imageManagerAllowFiles'],
+                    $config['imageManagerListSize'],
+                    $config['imageManagerListPath'],
+                    $request))->getList();
                 break;
             /* 列出文件 */
             case 'listfile':

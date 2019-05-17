@@ -1,17 +1,16 @@
-<?php namespace Stevenyangecho\UEditor\Uploader;
+<?php
 
-use Stevenyangecho\UEditor\Uploader\Upload;
+namespace VRobin\UEditor\Uploader;
 
 /**
  * Class UploadCatch
  * 图片远程抓取
  *
- * @package Stevenyangecho\UEditor\Uploader
+ * @package VRobin\UEditor\Uploader
  */
 class UploadCatch  extends Upload{
-    use UploadQiniu;
 
-    public function doUpload()
+    public function prepare()
     {
 
         $imgUrl = strtolower(str_replace("&amp;", "&", $this->config['imgUrl']));

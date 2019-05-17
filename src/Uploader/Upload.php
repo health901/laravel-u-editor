@@ -1,13 +1,14 @@
-<?php namespace Stevenyangecho\UEditor\Uploader;
+<?php
 
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+namespace VRobin\UEditor\Uploader;
+
 
 /**
  * Abstract Class Upload
  * 文件上传抽象类
  *
  *
- * @package Stevenyangecho\UEditor\Uploader
+ * @package VRobin\UEditor\Uploader
  */
 abstract class Upload
 {
@@ -23,17 +24,18 @@ abstract class Upload
     protected $fileType; //文件类型
     protected $stateInfo; //上传状态信息,
     protected $stateMap; //上传状态映射表，国际化用户需考虑此处数据的国际化
-    abstract function doUpload(); //抽象方法,上传核心方法
+
+    abstract function prepare();     //准备工作
 
     public function __construct(array $config, $request)
     {
         $this->config = $config;
         $this->request = $request;
         $this->fileField = $this->config['fieldName'];
-        if(isset($config['allowFiles'])){
-            $this->allowFiles=$config['allowFiles'];
-        }else{
-            $this->allowFiles=[];
+        if (isset($config['allowFiles'])) {
+            $this->allowFiles = $config['allowFiles'];
+        } else {
+            $this->allowFiles = [];
         }
 
         $stateMap = [
@@ -44,20 +46,28 @@ abstract class Upload
             trans("UEditor::upload.upload_file_empty"),
             "ERROR_TMP_FILE" => trans("UEditor::upload.ERROR_TMP_FILE"),
             "ERROR_TMP_FILE_NOT_FOUND" => trans("UEditor::upload.ERROR_TMP_FILE_NOT_FOUND"),
-            "ERROR_SIZE_EXCEED" =>trans("UEditor::upload.ERROR_SIZE_EXCEED"),
+            "ERROR_SIZE_EXCEED" => trans("UEditor::upload.ERROR_SIZE_EXCEED"),
             "ERROR_TYPE_NOT_ALLOWED" => trans("UEditor::upload.ERROR_TYPE_NOT_ALLOWED"),
             "ERROR_CREATE_DIR" => trans("UEditor::upload.ERROR_CREATE_DIR"),
             "ERROR_DIR_NOT_WRITEABLE" => trans("UEditor::upload.ERROR_DIR_NOT_WRITEABL"),
             "ERROR_FILE_MOVE" => trans("UEditor::upload.ERROR_FILE_MOVE"),
             "ERROR_FILE_NOT_FOUND" => trans("UEditor::upload.ERROR_FILE_NOT_FOUND"),
             "ERROR_WRITE_CONTENT" => trans("UEditor::upload.ERROR_WRITE_CONTENT"),
-            "ERROR_UNKNOWN" =>  trans("UEditor::upload.ERROR_UNKNOWN"),
+            "ERROR_UNKNOWN" => trans("UEditor::upload.ERROR_UNKNOWN"),
             "ERROR_DEAD_LINK" => trans("UEditor::upload.ERROR_DEAD_LINK"),
-            "ERROR_HTTP_LINK" =>  trans("UEditor::upload.ERROR_HTTP_LINK"),
-            "ERROR_HTTP_CONTENTTYPE" =>  trans("UEditor::upload.ERROR_HTTP_CONTENTTYPE"),
-            "ERROR_UNKNOWN_MODE" =>  trans("UEditor::upload.ERROR_UNKNOWN_MODE"),
+            "ERROR_HTTP_LINK" => trans("UEditor::upload.ERROR_HTTP_LINK"),
+            "ERROR_HTTP_CONTENTTYPE" => trans("UEditor::upload.ERROR_HTTP_CONTENTTYPE"),
+            "ERROR_UNKNOWN_MODE" => trans("UEditor::upload.ERROR_UNKNOWN_MODE"),
         ];
-        $this->stateMap=$stateMap;
+        $this->stateMap = $stateMap;
+
+    }
+
+    /**
+     * 上传操作
+     */
+    public function doUpload()
+    {
 
     }
 
@@ -70,7 +80,9 @@ abstract class Upload
 
     public function upload()
     {
-        $this->doUpload();
+        if ($this->prepare()) {
+            $this->doUpload();
+        }
         return $this->getFileInfo();
     }
 
@@ -89,7 +101,7 @@ abstract class Upload
      * 文件大小检测
      * @return bool
      */
-    protected function  checkSize()
+    protected function checkSize()
     {
         return $this->fileSize <= ($this->config["maxSize"]);
     }
@@ -152,6 +164,7 @@ abstract class Upload
 
         return $rootPath . '/' . $fullName;
     }
+
     /**
      * 文件类型检测
      * @return bool
@@ -161,6 +174,7 @@ abstract class Upload
 
         return in_array($this->getFileExt(), $this->config["allowFiles"]);
     }
+
     /**
      * 获取当前上传成功文件的各项信息
      * @return array
