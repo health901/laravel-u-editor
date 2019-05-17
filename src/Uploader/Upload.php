@@ -19,7 +19,7 @@ abstract class Upload
     protected $oriName; //原始文件名
     protected $fileName; //新文件名
     protected $fullName; //完整文件名,即从当前配置目录开始的URL
-    protected $filePath; //完整文件名,即从当前配置目录开始的URL
+    protected $fileUrl;
     protected $fileSize; //文件大小
     protected $fileType; //文件类型
     protected $stateInfo; //上传状态信息,
@@ -68,7 +68,50 @@ abstract class Upload
      */
     public function doUpload()
     {
+        $file = $this->request->file($this->fileField);
+        if (empty($file)) {
+            $this->stateInfo = $this->getStateInfo("ERROR_FILE_NOT_FOUND");
+            return false;
+        }
+        if (!$file->isValid()) {
+            $this->stateInfo = $this->getStateInfo($file->getError());
+            return false;
 
+        }
+        $this->file = $file;
+        $this->oriName = $this->file->getClientOriginalName();
+        $this->fileSize = $this->file->getSize();
+        $this->fileType = $this->getFileExt();
+        $this->fullName = $this->getFullName();
+        $this->fileName = basename($this->fullName);
+
+        //检查文件大小是否超出限制
+        if (!$this->checkSize()) {
+            $this->stateInfo = $this->getStateInfo("ERROR_SIZE_EXCEED");
+            return false;
+        }
+        //检查是否不允许的文件格式
+        if (!$this->checkType()) {
+            $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
+            return false;
+        }
+        return $this->saveFile();
+    }
+
+    protected function saveFile()
+    {
+        $fs = new FileSystem();
+        try {
+            $r = $fs->storage->put($this->fullName, file_get_contents($this->file->getRealPath()));
+            if ($r) {
+                $this->fileUrl = $fs->storage->url(trim($this->fullName,'/'));
+            }
+            $this->stateInfo = $this->stateMap[0];
+
+        } catch (\Exception $exception) {
+            $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
+            return false;
+        }
     }
 
     /**
@@ -150,22 +193,6 @@ abstract class Upload
     }
 
     /**
-     * 获取文件完整路径
-     * @return string
-     */
-    protected function getFilePath()
-    {
-        $fullName = $this->fullName;
-
-        $rootPath = public_path();
-
-        $fullName = ltrim($fullName, '/');
-
-
-        return $rootPath . '/' . $fullName;
-    }
-
-    /**
      * 文件类型检测
      * @return bool
      */
@@ -183,7 +210,7 @@ abstract class Upload
     {
         return array(
             "state" => $this->stateInfo,
-            "url" => $this->fullName,
+            "url" => $this->fileUrl,
             "title" => $this->fileName,
             "original" => $this->oriName,
             "type" => $this->fileType,

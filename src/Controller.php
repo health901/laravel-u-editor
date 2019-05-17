@@ -1,12 +1,15 @@
-<?php namespace Stevenyangecho\UEditor;
+<?php
+
+namespace VRobin\UEditor;
 
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use Stevenyangecho\UEditor\Uploader\UploadScrawl;
-use Stevenyangecho\UEditor\Uploader\UploadFile;
-use Stevenyangecho\UEditor\Uploader\UploadCatch;
+use VRobin\UEditor\Uploader\UploadScrawl;
+use VRobin\UEditor\Uploader\UploadFile;
+use VRobin\UEditor\Uploader\UploadCatch;
 use VRobin\UEditor\Uploader\Lists;
+
 
 class Controller extends BaseController
 {
@@ -82,26 +85,11 @@ class Controller extends BaseController
                 break;
             /* 列出文件 */
             case 'listfile':
-                if (config('UEditorUpload.core.mode') == 'local') {
-                    $result = with(new Lists(
-                        $config['fileManagerAllowFiles'],
-                        $config['fileManagerListSize'],
-                        $config['fileManagerListPath'],
-                        $request))->getList();
-                }else if (config('UEditorUpload.core.mode') == 'qiniu') {
-                    $result = with(new ListsQiniu(
-                        $config['fileManagerAllowFiles'],
-                        $config['fileManagerListSize'],
-                        $config['fileManagerListPath'],
-                        $request))->getList();
-                }else {
-                    $result = with(new Lists(
-                        $config['imageManagerAllowFiles'],
-                        $config['imageManagerListSize'],
-                        $config['imageManagerListPath'],
-                        $request))->getList();
-                }
-
+                $result = with(new Lists(
+                    $config['fileManagerAllowFiles'],
+                    $config['fileManagerListSize'],
+                    $config['fileManagerListPath'],
+                    $request))->getList();
                 break;
 
             /* 抓取远程文件 */

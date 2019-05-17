@@ -1,7 +1,8 @@
-<?php namespace Stevenyangecho\UEditor;
-
+<?php
+namespace VRobin\UEditor;
 
 use Illuminate\Support\ServiceProvider;
+
 class UEditorServiceProvider extends ServiceProvider
 {
 
