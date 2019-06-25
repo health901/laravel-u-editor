@@ -95,14 +95,14 @@ abstract class Upload
             $this->stateInfo = $this->getStateInfo("ERROR_TYPE_NOT_ALLOWED");
             return false;
         }
-        return $this->saveFile();
+        return $this->saveFile(file_get_contents($this->file->getRealPath()));
     }
 
-    protected function saveFile()
+    protected function saveFile($file_stream)
     {
         $fs = new FileSystem();
         try {
-            $r = $fs->storage->put($this->fullName, file_get_contents($this->file->getRealPath()));
+            $r = $fs->storage->put($this->fullName, $file_stream);
             if ($r) {
                 $this->fileUrl = $fs->storage->url(trim($this->fullName,'/'));
             }
