@@ -107,7 +107,8 @@ class Controller extends BaseController
                 $list = [];
                 foreach ($sources as $imgUrl) {
                     $upConfig['imgUrl'] = $imgUrl;
-                    $info = with(new UploadCatch($upConfig, $request))->upload();
+                    $uploader = new UploadCatch($upConfig, $request);
+                    $info = $uploader->upload();
 
                     array_push($list, array(
                         "state" => $info["state"],
@@ -115,7 +116,7 @@ class Controller extends BaseController
                         "size" => $info["size"],
                         "title" => htmlspecialchars($info["title"]),
                         "original" => htmlspecialchars($info["original"]),
-                        "source" => htmlspecialchars($imgUrl)
+                        "source" => $imgUrl
                     ));
                 }
                 $result = [
