@@ -8,11 +8,16 @@ namespace VRobin\UEditor\Uploader;
  *
  * @package VRobin\UEditor\Uploader
  */
-class UploadCatch  extends Upload{
+class UploadCatch extends Upload
+{
 
     public function prepare()
     {
+        return true;
+    }
 
+    public function doUpload()
+    {
         $imgUrl = strtolower(str_replace("&amp;", "&", $this->config['imgUrl']));
         //http开头验证
         if (strpos($imgUrl, "http") !== 0) {
@@ -29,7 +34,7 @@ class UploadCatch  extends Upload{
 
         //格式验证(扩展名验证和Content-Type验证)
         $fileType = strtolower(strrchr($imgUrl, '.'));
-        if (!in_array($fileType, $this->config['allowFiles']) ) {
+        if (!in_array($fileType, $this->config['allowFiles'])) {
             $this->stateInfo = $this->getStateInfo("ERROR_HTTP_CONTENTTYPE");
             return false;
         }
@@ -49,16 +54,12 @@ class UploadCatch  extends Upload{
         preg_match("/[\/]([^\/]*)[\.]?[^\.\/]*$/", $imgUrl, $m);
 
 
-        $this->oriName = $m ? $m[1]:"";
+        $this->oriName = $m ? $m[1] : "";
         $this->fileSize = strlen($img);
         $this->fileType = $this->getFileExt();
         $this->fullName = $this->getFullName();
         $this->filePath = $this->getFilePath();
-        $this->fileName =  basename($this->filePath);
-        $dirname = dirname($this->filePath);
-
-
-
+        $this->fileName = basename($this->filePath);
 
 
         //检查文件大小是否超出限制
@@ -66,42 +67,7 @@ class UploadCatch  extends Upload{
             $this->stateInfo = $this->getStateInfo("ERROR_SIZE_EXCEED");
             return false;
         }
-
-
-        if(config('UEditorUpload.core.mode')=='local'){
-            //创建目录失败
-            if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
-                $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
-                return false;
-            } else if (!is_writeable($dirname)) {
-                $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
-                return false;
-            }
-
-            //移动文件
-            if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
-                $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
-                return false;
-            } else { //移动成功
-                $this->stateInfo = $this->stateMap[0];
-                return true;
-            }
-        }else if(config('UEditorUpload.core.mode')=='qiniu'){
-
-            return $this->uploadQiniu($this->filePath,$img);
-
-        }
-        // else if(config('UEditorUpload.core.mode')=='upyun'){
-        //    return $this->uploadUpyun($this->filePath,$img);
-        // }
-        else{
-            $this->stateInfo = $this->getStateInfo("ERROR_UNKNOWN_MODE");
-            return false;
-        }
-
-
-
-
+        $this->saveFile($img);
     }
 
     /**
