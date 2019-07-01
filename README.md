@@ -12,6 +12,7 @@ UEditor 前台文件完全无修改,可自由gulp等工具部署到生产环境
 使用laravel filesystems进行文件管理
 
 ##ChangeLog
+
  v2.0.2 实现远程图片抓取,兼容微信公众号图片
  
  v2.0.1 实现上传
